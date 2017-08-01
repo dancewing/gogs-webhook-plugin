@@ -1,11 +1,12 @@
 package org.jenkinsci.plugins.gogs.ext.httpclient;
 
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.ssl.SSLContexts;
+
+import javax.net.ssl.SSLSocket;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.net.ssl.SSLSocket;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.ssl.SSLContexts;
 
 public class TLSSocketFactory extends SSLConnectionSocketFactory {
 

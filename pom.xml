@@ -82,6 +82,11 @@
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins.workflow</groupId>
+      <artifactId>workflow-support</artifactId>
+      <version>${workflow.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jenkins-ci.plugins.workflow</groupId>
       <artifactId>workflow-cps</artifactId>
       <version>${workflow.version}</version>
       <scope>test</scope>
@@ -191,7 +196,7 @@
         <configuration>
           <sourceDirectory>${basedir}/src/main/resources/schema</sourceDirectory>
           <outputDirectory>${project.build.directory}/generated-sources/json-schema</outputDirectory>
-          <targetPackage>jenkins.plugins.hipchat.model.notifications</targetPackage>
+          <targetPackage>org.jenkinsci.plugins.gogs.model.notifications</targetPackage>
           <targetVersion>1.7</targetVersion>
           <generateBuilders>true</generateBuilders>
           <includeAdditionalProperties>false</includeAdditionalProperties>

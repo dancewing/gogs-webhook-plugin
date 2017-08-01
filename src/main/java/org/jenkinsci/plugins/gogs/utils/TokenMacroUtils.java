@@ -3,6 +3,7 @@ package org.jenkinsci.plugins.gogs.utils;
 import hudson.model.Run;
 import hudson.scm.ChangeLogSet;
 import hudson.scm.ChangeLogSet.Entry;
+
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;

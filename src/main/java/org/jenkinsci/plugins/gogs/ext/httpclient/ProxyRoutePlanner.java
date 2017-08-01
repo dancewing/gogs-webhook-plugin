@@ -1,13 +1,14 @@
 package org.jenkinsci.plugins.gogs.ext.httpclient;
 
 import hudson.ProxyConfiguration;
-import java.net.Proxy;
 import org.apache.http.HttpException;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.impl.conn.DefaultRoutePlanner;
 import org.apache.http.impl.conn.DefaultSchemePortResolver;
 import org.apache.http.protocol.HttpContext;
+
+import java.net.Proxy;
 
 public class ProxyRoutePlanner extends DefaultRoutePlanner {
 

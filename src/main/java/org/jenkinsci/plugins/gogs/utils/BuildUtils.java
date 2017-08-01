@@ -2,6 +2,7 @@ package org.jenkinsci.plugins.gogs.utils;
 
 import hudson.model.Result;
 import hudson.model.Run;
+
 import javax.inject.Singleton;
 
 @Singleton
