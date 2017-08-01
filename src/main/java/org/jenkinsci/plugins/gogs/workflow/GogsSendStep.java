@@ -1,12 +1,15 @@
 package org.jenkinsci.plugins.gogs.workflow;
 
+import hudson.AbortException;
 import hudson.Extension;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.gogs.GogsCause;
+import org.jenkinsci.plugins.gogs.GogsProjectProperty;
 import org.jenkinsci.plugins.gogs.Messages;
 import org.jenkinsci.plugins.gogs.PublishService;
+import org.jenkinsci.plugins.gogs.exceptions.NotificationException;
 import org.jenkinsci.plugins.gogs.impl.GogsPublishService;
 import org.jenkinsci.plugins.gogs.model.notifications.Notification;
 import org.jenkinsci.plugins.gogs.utils.BuildUtils;
@@ -16,6 +19,7 @@ import org.jenkinsci.plugins.workflow.steps.AbstractSynchronousNonBlockingStepEx
 import org.jenkinsci.plugins.workflow.steps.StepContextParameter;
 import org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.DataBoundSetter;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -30,6 +34,9 @@ public class GogsSendStep extends AbstractStepImpl {
     private static final Logger logger = Logger.getLogger(GogsSendStep.class.getName());
 
     public final RunWrapper build;
+
+    @DataBoundSetter
+    public boolean failOnError;
 
     @DataBoundConstructor
     public GogsSendStep(@Nonnull RunWrapper currentBuild) {
@@ -80,18 +87,31 @@ public class GogsSendStep extends AbstractStepImpl {
                 return null;
             }
 
+            String signature = "";
+            GogsProjectProperty gogsProjectProperty =  run.getParent().getProperty(GogsProjectProperty.class);
+            if (gogsProjectProperty!=null) {
+                signature = gogsProjectProperty.getGogsSecret();
+            }
+
+
             PublishService publishService = new GogsPublishService();
             try {
-                publishService.publish(new Notification().withResult(step.build.getResult())
+                publishService.publish(gogsCause.getCallback(), signature, new Notification().withResult(step.build.getResult())
                         .withDisplayName(step.build.getDisplayName())
                         .withDescription(step.build.getDescription())
                         .withNumber(step.build.getNumber())
                         .withTimeInMillis(step.build.getTimeInMillis())
-                        .withStartTimeInMillis(step.build.getStartTimeInMillis()));
-                //listener.getLogger().println(Messages.NotificationSuccessful(room));
-            } catch (IOException ex) {
+                        .withStartTimeInMillis(step.build.getStartTimeInMillis())
+                        .withDeliveryID(gogsCause.getDeliveryID()));
+
+            } catch (NotificationException | IOException ex) {
                 listener.getLogger().println(Messages.NotificationFailed(ex.getMessage()));
-                listener.error(Messages.NotificationFailed(ex.getMessage()));
+
+                if (step.failOnError) {
+                    throw new AbortException(Messages.NotificationFailed(ex.getMessage()));
+                } else {
+                    listener.error(Messages.NotificationFailed(ex.getMessage()));
+                }
             }
 
             return null;

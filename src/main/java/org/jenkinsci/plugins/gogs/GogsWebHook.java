@@ -54,6 +54,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 @Extension
 public class GogsWebHook implements UnprotectedRootAction {
+
+    private final static String[] ACCEPT_EVENTS = {"create","delete","fork","push","issues","issue_comment","pull_request","release"};
+
     private final static Logger LOGGER = Logger.getLogger(GogsWebHook.class.getName());
     static final String URLNAME = "gogs-webhook";
     private static final String DEFAULT_CHARSET = "UTF-8";
@@ -103,8 +106,14 @@ public class GogsWebHook implements UnprotectedRootAction {
 
         // Get X-Gogs-Event
         String event = req.getHeader("X-Gogs-Event");
-        if (!"push".equals(event)) {
-            result.setStatus(403, "Only push event can be accepted.");
+        boolean eventSupported = false;
+        if (event!=null && event.length()>0) {
+            for (int i=0;i< ACCEPT_EVENTS.length;i++) {
+                if (event.equals(ACCEPT_EVENTS[i]))  eventSupported = true;
+            }
+        }
+        if (!eventSupported) {
+            result.setStatus(403, "Event can be accepted.");
             exitWebHook(result, rsp);
             return;
         }
@@ -112,9 +121,13 @@ public class GogsWebHook implements UnprotectedRootAction {
         // Get X-Gogs-Delivery header with deliveryID
         String gogsDelivery = req.getHeader("X-Gogs-Delivery");
         if (gogsDelivery == null || gogsDelivery.isEmpty()) {
-            gogsDelivery = "Triggered by Jenkins-Gogs-Plugin. Delivery ID unknown.";
-        } else {
-            gogsDelivery = "Gogs-ID: " + gogsDelivery;
+            gogsDelivery = "unknown";
+        }
+
+        String gogsCallback = req.getHeader("X-Gogs-Callback");
+
+        if (gogsCallback == null || gogsCallback.isEmpty()) {
+            gogsCallback = "";
         }
 
         // Get X-Gogs-Signature
@@ -122,7 +135,6 @@ public class GogsWebHook implements UnprotectedRootAction {
         if (gogsSignature == null || gogsSignature.isEmpty()) {
             gogsSignature = null;
         }
-
 
         // Get queryStringMap from the URI
         String queryString = checkNotNull(req.getQueryString(), "The queryString in the request is null");
@@ -217,10 +229,10 @@ public class GogsWebHook implements UnprotectedRootAction {
                 LOGGER.warning(msg);
             } else if (isNullOrEmpty(jSecret) && isNullOrEmpty(gSecret)) {
           /* No password is set in Jenkins and Gogs, run without secrets */
-                result = payloadProcessor.triggerJobs(jobName, gogsDelivery);
+                result = payloadProcessor.triggerJobs(jobName, gogsDelivery, gogsCallback);
             } else if (!isNullOrEmpty(jSecret) && jSecret.equals(gSecret)) {
           /* Password is set in Jenkins and Gogs, and is correct */
-                result = payloadProcessor.triggerJobs(jobName, gogsDelivery);
+                result = payloadProcessor.triggerJobs(jobName, gogsDelivery, gogsCallback);
             } else {
           /* Gogs and Jenkins secrets differs */
                 result.setStatus(403, "Incorrect secret");

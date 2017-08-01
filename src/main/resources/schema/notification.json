@@ -19,6 +19,9 @@
         },
         "displayName" : {
             "type": "string"
+        },
+        "deliveryID" :{
+            "type" : "string"
         }
     },
     "required": [

@@ -38,7 +38,7 @@ public class GogsPayloadProcessor {
   public GogsPayloadProcessor() {
   }
 
-  public GogsResults triggerJobs(String jobName, String deliveryID) {
+  public GogsResults triggerJobs(String jobName, String deliveryID, String callback) {
     SecurityContext saveCtx = null;
     GogsResults result = new GogsResults();
 
@@ -52,7 +52,7 @@ public class GogsPayloadProcessor {
 
         BuildableItem project = GogsUtils.find(jobName, BuildableItem.class);
         if (project != null) {
-          Cause cause = new GogsCause(deliveryID);
+          Cause cause = new GogsCause(deliveryID, callback);
           project.scheduleBuild(0, cause);
           result.setMessage(String.format("Job '%s' is executed",jobName));
         } else {

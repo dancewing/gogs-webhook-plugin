@@ -26,15 +26,27 @@ package org.jenkinsci.plugins.gogs;
 import hudson.model.Cause;
 
 public class GogsCause extends Cause {
-    String deliveryID = "";
 
-    public GogsCause(String deliveryID)
+    private String deliveryID = "";
+
+    private String callback = "";
+
+    public GogsCause(String deliveryID, String callback)
     {
       this.deliveryID = deliveryID;
+      this.callback = callback;
     }
 
     @Override
     public String getShortDescription() {
         return this.deliveryID;
+    }
+
+    public String getDeliveryID() {
+        return deliveryID;
+    }
+
+    public String getCallback() {
+        return callback;
     }
 }
