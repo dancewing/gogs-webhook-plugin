@@ -49,7 +49,6 @@ public abstract class PublishService {
         return httpClientBuilder.build();
     }
 
-
     public abstract void publish(String url, String signature, Notification notification) throws NotificationException;
 
     protected final String readResponse(HttpEntity entity) throws IOException {

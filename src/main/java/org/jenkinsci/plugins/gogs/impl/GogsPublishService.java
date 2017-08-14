@@ -37,7 +37,8 @@ public class GogsPublishService extends PublishService {
 
             if (signature!=null && !signature.isEmpty()) {
                 try {
-                    post.addHeader("X-Gogs-Signature", GogsWebHook.encode(data, signature));
+                    //post.addHeader("X-Gogs-Signature", GogsWebHook.encode(data, signature));
+                    post.addHeader( "Authorization", "token " +  signature);
                 } catch (Exception e) {
                     LOGGER.log(Level.WARNING, "An IO error occurred while posting HipChat notification", e);
                 }

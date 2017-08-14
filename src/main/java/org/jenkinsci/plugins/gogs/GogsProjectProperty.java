@@ -39,16 +39,23 @@ import java.util.logging.Logger;
 public class GogsProjectProperty extends JobProperty<Job<?, ?>> {
   private final String gogsSecret;
 
+  private final String gogsHost;
+
   @DataBoundConstructor
-  public GogsProjectProperty(String gogsSecret) {
+  public GogsProjectProperty(String gogsSecret, String gogsHost) {
     this.gogsSecret = gogsSecret;
+    this.gogsHost = gogsHost;
   }
 
   public String getGogsSecret() {
     return this.gogsSecret;
   }
 
-  private static final Logger LOGGER = Logger.getLogger(GogsWebHook.class.getName());
+    public String getGogsHost() {
+        return gogsHost;
+    }
+
+    private static final Logger LOGGER = Logger.getLogger(GogsWebHook.class.getName());
 
   @Extension
   public static final class DescriptorImpl extends JobPropertyDescriptor {
@@ -56,7 +63,7 @@ public class GogsProjectProperty extends JobProperty<Job<?, ?>> {
       private String gogsSecret;
 
       public String getGogsSecret() {
-        return gogsSecret;
+          return gogsSecret;
       }
 
       public JobProperty<?> newInstance(StaplerRequest req, JSONObject formData) throws FormException {

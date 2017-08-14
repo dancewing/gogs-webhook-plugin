@@ -22,6 +22,12 @@
         },
         "deliveryID" :{
             "type" : "string"
+        },
+        "state" : {
+            "type" : "string"
+        },
+        "step" : {
+            "type" : "string"
         }
     },
     "required": [

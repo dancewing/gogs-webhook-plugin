@@ -55,7 +55,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @Extension
 public class GogsWebHook implements UnprotectedRootAction {
 
-    private final static String[] ACCEPT_EVENTS = {"create","delete","fork","push","issues","issue_comment","pull_request","release"};
+    private final static String[] ACCEPT_EVENTS = {"create","delete","fork","push","issues","issue_comment","pull_request","release", "hook"};
 
     private final static Logger LOGGER = Logger.getLogger(GogsWebHook.class.getName());
     static final String URLNAME = "gogs-webhook";
@@ -131,10 +131,10 @@ public class GogsWebHook implements UnprotectedRootAction {
         }
 
         // Get X-Gogs-Signature
-        String gogsSignature = req.getHeader("X-Gogs-Signature");
-        if (gogsSignature == null || gogsSignature.isEmpty()) {
-            gogsSignature = null;
-        }
+//        String gogsSignature = req.getHeader("X-Gogs-Signature");
+//        if (gogsSignature == null || gogsSignature.isEmpty()) {
+//            gogsSignature = null;
+//        }
 
         // Get queryStringMap from the URI
         String queryString = checkNotNull(req.getQueryString(), "The queryString in the request is null");
@@ -209,34 +209,46 @@ public class GogsWebHook implements UnprotectedRootAction {
                 SecurityContextHolder.setContext(saveCtx);
             }
 
-            String gSecret = null;
-            if (gogsSignature == null) {
-                gSecret = jsonObject.optString("secret", null);  /* Secret provided by Gogs < 0.10.x   */
-            } else {
-                try {
-                    if (gogsSignature.equals(encode(body, jSecret))) {
-                        gSecret = jSecret;
-                        // now hex is right, continue to old logic
-                    }
-                } catch (Exception e) {
-                    LOGGER.warning(e.getMessage());
-                }
-            }
+//            String gSecret = null;
+//            if (gogsSignature == null) {
+//                gSecret = jsonObject.optString("secret", null);  /* Secret provided by Gogs < 0.10.x   */
+//            } else {
+//                try {
+//                    if (gogsSignature.equals(encode(body, jSecret))) {
+//                        gSecret = jSecret;
+//                        // now hex is right, continue to old logic
+//                    }
+//                } catch (Exception e) {
+//                    LOGGER.warning(e.getMessage());
+//                }
+//            }
 
             if (!foundJob) {
                 String msg = String.format("Job '%s' is not defined in Jenkins", jobName);
                 result.setStatus(404, msg);
                 LOGGER.warning(msg);
-            } else if (isNullOrEmpty(jSecret) && isNullOrEmpty(gSecret)) {
-          /* No password is set in Jenkins and Gogs, run without secrets */
-                result = payloadProcessor.triggerJobs(jobName, gogsDelivery, gogsCallback);
-            } else if (!isNullOrEmpty(jSecret) && jSecret.equals(gSecret)) {
-          /* Password is set in Jenkins and Gogs, and is correct */
-                result = payloadProcessor.triggerJobs(jobName, gogsDelivery, gogsCallback);
             } else {
-          /* Gogs and Jenkins secrets differs */
-                result.setStatus(403, "Incorrect secret");
+                result = payloadProcessor.triggerJobs(jobName, gogsDelivery, gogsCallback);
             }
+
+
+//            if (!foundJob) {
+//                String msg = String.format("Job '%s' is not defined in Jenkins", jobName);
+//                result.setStatus(404, msg);
+//                LOGGER.warning(msg);
+//            } else if (isNullOrEmpty(jSecret) && isNullOrEmpty(gSecret)) {
+//          /* No password is set in Jenkins and Gogs, run without secrets */
+//                result = payloadProcessor.triggerJobs(jobName, gogsDelivery, gogsCallback);
+//            } else if (!isNullOrEmpty(jSecret) && jSecret.equals(gSecret)) {
+//          /* Password is set in Jenkins and Gogs, and is correct */
+//                result = payloadProcessor.triggerJobs(jobName, gogsDelivery, gogsCallback);
+//            } else {
+//          /* Gogs and Jenkins secrets differs */
+//                result.setStatus(403, "Incorrect secret");
+//            }
+
+
+
         } else {
             result.setStatus(404, "No payload or URI contains invalid entries.");
         }

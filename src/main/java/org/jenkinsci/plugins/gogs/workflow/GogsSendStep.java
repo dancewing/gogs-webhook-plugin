@@ -1,6 +1,7 @@
 package org.jenkinsci.plugins.gogs.workflow;
 
 import hudson.AbortException;
+import hudson.EnvVars;
 import hudson.Extension;
 import hudson.model.Run;
 import hudson.model.TaskListener;
@@ -24,6 +25,9 @@ import org.kohsuke.stapler.DataBoundSetter;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 /**
@@ -44,10 +48,10 @@ public class GogsSendStep extends AbstractStepImpl {
     }
 
     @Extension
-    public static class DescriptorImpl extends AbstractStepDescriptorImpl {
+    public static class SenderDescriptorImpl extends AbstractStepDescriptorImpl {
 
-        public DescriptorImpl() {
-            super(HipChatSendStepExecution.class);
+        public SenderDescriptorImpl() {
+            super(GogsSendStepExecution.class);
         }
 
         @Override
@@ -62,7 +66,7 @@ public class GogsSendStep extends AbstractStepImpl {
 
     }
 
-    public static class HipChatSendStepExecution extends AbstractSynchronousNonBlockingStepExecution<Void> {
+    public static class GogsSendStepExecution extends AbstractSynchronousNonBlockingStepExecution<Void> {
 
         private static final long serialVersionUID = 1L;
 
@@ -80,6 +84,18 @@ public class GogsSendStep extends AbstractStepImpl {
         @Override
         protected Void run() throws Exception {
 
+//            EnvVars environment = run.getEnvironment(listener);
+//            if (environment!=null) {
+//                Set<Map.Entry<String, String>> entries = environment.entrySet();
+//                Iterator<Map.Entry<String, String>> iterator = entries.iterator();
+//                while (iterator.hasNext()) {
+//                    Map.Entry<String, String> next = iterator.next();
+//                    logger.info("key :" + next.getKey() +", value: " + next.getValue());
+//                }
+//            }
+
+            logger.info(run.getLogText().toString());
+
             GogsCause gogsCause = step.build.getRawBuild().getCause(GogsCause.class);
 
             if (gogsCause == null) {
@@ -88,8 +104,8 @@ public class GogsSendStep extends AbstractStepImpl {
             }
 
             String signature = "";
-            GogsProjectProperty gogsProjectProperty =  run.getParent().getProperty(GogsProjectProperty.class);
-            if (gogsProjectProperty!=null) {
+            GogsProjectProperty gogsProjectProperty = run.getParent().getProperty(GogsProjectProperty.class);
+            if (gogsProjectProperty != null) {
                 signature = gogsProjectProperty.getGogsSecret();
             }
 

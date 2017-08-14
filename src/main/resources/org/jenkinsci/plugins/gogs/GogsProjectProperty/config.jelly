@@ -1,8 +1,11 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
   <f:block>
-    <f:optionalBlock name="${descriptor.GOGS_PROJECT_BLOCK_NAME}" title="Use Gogs secret" checked="${instance.gogsSecret != null}">
-      <f:entry title="${%Secret}">
+    <f:optionalBlock name="${descriptor.GOGS_PROJECT_BLOCK_NAME}" title="Gogs support" checked="${instance.gogsSecret != null}">
+      <f:entry title="${%Gogs Host}">
+          <f:textbox field="gogsProject" />
+      </f:entry>
+      <f:entry title="${%API Token}">
         <f:password field="gogsSecret" />
       </f:entry>
     </f:optionalBlock>
