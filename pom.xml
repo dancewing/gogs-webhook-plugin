@@ -9,7 +9,7 @@
 
   <groupId>org.jenkins-ci.plugins</groupId>
   <artifactId>gogs-webhook</artifactId>
-  <version>1.0.11-SNAPSHOT</version>
+  <version>1.0.12</version>
   <packaging>hpi</packaging>
 
   <properties>
@@ -95,7 +95,6 @@
       <groupId>org.jenkins-ci.plugins.workflow</groupId>
       <artifactId>workflow-job</artifactId>
       <version>${workflow.version}</version>
-      <scope>test</scope>
     </dependency>
     <dependency> <!-- StepConfigTester -->
       <groupId>org.jenkins-ci.plugins.workflow</groupId>

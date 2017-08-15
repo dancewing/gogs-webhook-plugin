@@ -52,7 +52,10 @@ public class GogsPayloadProcessor {
 
         BuildableItem project = GogsUtils.find(jobName, BuildableItem.class);
         if (project != null) {
-          Cause cause = new GogsCause(deliveryID, callback);
+          CauseData data = new CauseData();
+          data.setDeliveryID(deliveryID);
+          data.setCallback(callback);
+          Cause cause = new GogsCause(data);
           project.scheduleBuild(0, cause);
           result.setMessage(String.format("Job '%s' is executed",jobName));
         } else {

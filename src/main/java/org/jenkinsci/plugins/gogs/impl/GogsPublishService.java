@@ -50,7 +50,12 @@ public class GogsPublishService extends PublishService {
             // Always read response to ensure the inputstream is closed
             String response = readResponse(httpResponse.getEntity());
 
-            if (responseCode/200 != 2) {
+
+            LOGGER.log(Level.WARNING, "Send report to {0}, signature: {1}, notification: {2}",
+                    new Object[]{url, signature, notification.toString()});
+
+
+            if (responseCode/100 != 2) {
                 if (LOGGER.isLoggable(Level.WARNING)) {
                     LOGGER.log(Level.WARNING, "HipChat post may have failed. ResponseCode: {0}, Response: {1}",
                             new Object[]{responseCode, response});

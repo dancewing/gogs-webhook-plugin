@@ -27,26 +27,20 @@ import hudson.model.Cause;
 
 public class GogsCause extends Cause {
 
-    private String deliveryID = "";
+    private CauseData data;
 
-    private String callback = "";
-
-    public GogsCause(String deliveryID, String callback)
+    public GogsCause(CauseData data)
     {
-      this.deliveryID = deliveryID;
-      this.callback = callback;
+        this.data = data;
     }
 
     @Override
     public String getShortDescription() {
-        return this.deliveryID;
+        return "Job triggered by Gogs";
+      //  return this.deliveryID;
     }
 
-    public String getDeliveryID() {
-        return deliveryID;
-    }
-
-    public String getCallback() {
-        return callback;
+    public CauseData getData() {
+        return data;
     }
 }

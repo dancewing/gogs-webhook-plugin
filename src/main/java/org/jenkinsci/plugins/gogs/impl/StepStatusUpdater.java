@@ -9,6 +9,7 @@ import org.jenkinsci.plugins.gogs.PublishService;
 import org.jenkinsci.plugins.gogs.exceptions.NotificationException;
 import org.jenkinsci.plugins.gogs.model.BuildState;
 import org.jenkinsci.plugins.gogs.model.notifications.Notification;
+import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 
 import java.util.logging.Logger;
 
@@ -26,7 +27,7 @@ public class StepStatusUpdater {
             notification.setState(state.name());
             notification.setStep(name);
 
-            notification.setDeliveryID(cause.getDeliveryID());
+            notification.setDeliveryID(cause.getData().getDeliveryID());
             notification.setNumber(build.getNumber());
             if (state == BuildState.success || state == BuildState.failed) {
                 notification.setTimeInMillis(build.getTimeInMillis());
@@ -47,7 +48,7 @@ public class StepStatusUpdater {
             }
 
             try {
-                publishService.publish(cause.getCallback(),signature,  notification);
+                publishService.publish(cause.getData().getCallback(), signature,  notification);
             } catch (NotificationException e) {
                 LOGGER.log(Level.INFO, "fail to publish notification");
             }
@@ -75,4 +76,5 @@ public class StepStatusUpdater {
             return this.revisionHash;
         }
     }
+
 }
